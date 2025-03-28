@@ -1,11 +1,10 @@
-
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+st.set_page_config(page_title="Societal Risk Merger Tool", layout="centered")
 
 # ---------------- CONFIG ----------------
-st.set_page_config(page_title="Societal Risk Merger Tool", layout="centered")
 st.title("🧮 Societal Risk Merger Tool")
 
 # ---------------- PRESETS ----------------
@@ -13,6 +12,23 @@ st.sidebar.header("🎯 Select Preset Scenario")
 
 presets = {
     "Custom": None,
+    "RTE Salad – Standard": {
+        "rr_score": 60,
+        "illness_base": 2.34,
+        "illness_exponent": 3,
+        "population": 60000000,
+        "economic": "Limited – Local supplier loss (e.g., bakery batch recall)",
+        "political": "Low – Local media coverage",
+        "trust": "Moderate – Notable drop in trust or loyalty",
+        "market": "Moderate – Withdrawal from major retailers",
+        "weights": {
+            "health": "Significant to public health",
+            "economic": "Minor business impact",
+            "political": "Local political interest only",
+            "trust": "Could impact perception or loyalty",
+            "market": "Regional disruption possible"
+        }
+    },
     "RTE Salad – Simulation 1": {
         "rr_score": 72,
         "illness_base": 2.34,
@@ -20,16 +36,136 @@ presets = {
         "population": 60000000,
         "economic": "Moderate – National product withdrawal (e.g., cheese recall)",
         "political": "Medium – National media attention (e.g., press release)",
+        "trust": "High – Public backlash, boycott, lawsuits",
+        "market": "Severe – Multi-country recall, trade barriers",
+        "weights": {
+            "health": "Top priority for decision-makers",
+            "economic": "Budgetary consideration",
+            "political": "National political/media relevance",
+            "trust": "Trust is key to public reaction",
+            "market": "Trade-wide or international effect"
+        }
+    },
+    "RTE Salad – Simulation 2": {
+        "rr_score": 62,
+        "illness_base": 4.68,
+        "illness_exponent": 3,
+        "population": 60000000,
+        "economic": "Moderate – National product withdrawal (e.g., cheese recall)",
+        "political": "Medium – National media attention (e.g., press release)",
         "trust": "Moderate – Notable drop in trust or loyalty",
-        "market": "Moderate – Withdrawal from major retailers",
+        "market": "Severe – Multi-country recall, trade barriers",
         "weights": {
             "health": "Significant to public health",
             "economic": "Budgetary consideration",
             "political": "National political/media relevance",
             "trust": "Could impact perception or loyalty",
+            "market": "Trade-wide or international effect"
+        }
+    },
+    "RTE Chicken – Standard": {
+        "rr_score": 45,
+        "illness_base": 5.85,
+        "illness_exponent": 2,
+        "population": 60000000,
+        "economic": "Limited – Local supplier loss (e.g., bakery batch recall)",
+        "political": "Low – Local media coverage",
+        "trust": "Low – Minor social media concern",
+        "market": "Mild – Removal from single shop or site",
+        "weights": {
+            "health": "Significant to public health",
+            "economic": "Minor business impact",
+            "political": "Local political interest only",
+            "trust": "Slight brand concern",
+            "market": "Local distribution only"
+        }
+    },
+    "RTE Chicken – Simulation 1": {
+        "rr_score": 58,
+        "illness_base": 8.78,
+        "illness_exponent": 4,
+        "population": 60000000,
+        "economic": "Severe – EU-wide recall or legal sanctions",
+        "political": "Medium – National media attention (e.g., press release)",
+        "trust": "Moderate – Notable drop in trust or loyalty",
+        "market": "Moderate – Withdrawal from major retailers",
+        "weights": {
+            "health": "Top priority for decision-makers",
+            "economic": "Major economic consequence",
+            "political": "National political/media relevance",
+            "trust": "Could impact perception or loyalty",
             "market": "Regional disruption possible"
         }
-    }
+    },
+    "RTE Chicken – Simulation 2": {
+        "rr_score": 57,
+        "illness_base": 5.87,
+        "illness_exponent": 4,
+        "population": 60000000,
+        "economic": "Severe – EU-wide recall or legal sanctions",
+        "political": "Medium – National media attention (e.g., press release)",
+        "trust": "Moderate – Notable drop in trust or loyalty",
+        "market": "Moderate – Withdrawal from major retailers",
+        "weights": {
+            "health": "Top priority for decision-makers",
+            "economic": "Budgetary consideration",
+            "political": "National political/media relevance",
+            "trust": "Could impact perception or loyalty",
+            "market": "Regional disruption possible"
+        }
+    },
+    "RTE Tiramisu – Standard": {
+        "rr_score": 49,
+        "illness_base": 2.34,
+        "illness_exponent": 3,
+        "population": 60000000,
+        "economic": "Limited – Local supplier loss (e.g., bakery batch recall)",
+        "political": "Medium – National media attention (e.g., press release)",
+        "trust": "Moderate – Notable drop in trust or loyalty",
+        "market": "Mild – Removal from single shop or site",
+        "weights": {
+            "health": "Significant to public health",
+            "economic": "Minor business impact",
+            "political": "National political/media relevance",
+            "trust": "Could impact perception or loyalty",
+            "market": "Local distribution only"
+        }
+    },
+    "RTE Tiramisu – Simulation 1": {
+        "rr_score": 60,
+        "illness_base": 2.43,
+        "illness_exponent": 5,
+        "population": 60000000,
+        "economic": "Moderate – National product withdrawal (e.g., cheese recall)",
+        "political": "High – EU-wide attention, parliamentary debate",
+        "trust": "High – Public backlash, boycott, lawsuits",
+        "market": "Moderate – Withdrawal from major retailers",
+        "weights": {
+            "health": "Top priority for decision-makers",
+            "economic": "Budgetary consideration",
+            "political": "Politically sensitive or explosive",
+            "trust": "Trust is key to public reaction",
+            "market": "Regional disruption possible"
+        }
+    },
+    "RTE Tiramisu – Simulation 2": {
+        "rr_score": 60,
+        "illness_base": 2.43,
+        "illness_exponent": 5,
+        "population": 60000000,
+        "economic": "Moderate – National product withdrawal (e.g., cheese recall)",
+        "political": "High – EU-wide attention, parliamentary debate",
+        "trust": "High – Public backlash, boycott, lawsuits",
+        "market": "Moderate – Withdrawal from major retailers",
+        "weights": {
+            "health": "Top priority for decision-makers",
+            "economic": "Budgetary consideration",
+            "political": "Politically sensitive or explosive",
+            "trust": "Trust is key to public reaction",
+            "market": "Regional disruption possible"
+        }
+    },
+    
 }
 
 selected_preset = st.sidebar.selectbox("Choose scenario", list(presets.keys()))
