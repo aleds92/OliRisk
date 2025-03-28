@@ -2,10 +2,10 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
 import math
-st.set_page_config(page_title="Societal Risk Merger Tool", layout="centered")
+st.set_page_config(page_title="OliRisk", layout="centered")
 
 # ---------------- CONFIG ----------------
-st.title("🧮 Societal Risk Merger Tool")
+st.title("🧮 OliRisk")
 
 # ---------------- PRESETS ----------------
 st.sidebar.header("🎯 Select Preset Scenario")
@@ -180,7 +180,7 @@ col1, col2, col3 = st.columns([1, 0.3, 1])
 with col1:
     base = st.number_input("Estimated Illness (Base)", min_value=0.0, value=preset["illness_base"] if preset else 1.0)
 with col2:
-    st.markdown('<p style="text-align:center; font-size:18px; margin-top:10px;">× 10^</p>', unsafe_allow_html=True)
+    st.markdown('<p style="text-align:center; font-size:18px; margin-top:0px;">× 10^</p>', unsafe_allow_html=True)
 with col3:
     exponent = st.number_input("Exponent", min_value=0, max_value=12, value=preset["illness_exponent"] if preset else 5)
 
