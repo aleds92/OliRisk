@@ -180,7 +180,7 @@ col1, col2, col3 = st.columns([1, 0.3, 1])
 with col1:
     base = st.number_input("Estimated Illness (Base)", min_value=0.0, value=preset["illness_base"] if preset else 1.0)
 with col2:
-    st.markdown('<p style="text-align:center; font-size:18px; margin-top:0px;">× 10^</p>', unsafe_allow_html=True)
+    st.markdown('<p style="text-align:center; font-size:18px; margin-top:33px;">× 10^</p>', unsafe_allow_html=True)
 with col3:
     exponent = st.number_input("Exponent", min_value=0, max_value=12, value=preset["illness_exponent"] if preset else 5)
 
@@ -397,7 +397,7 @@ with st.expander("📥 Contribution by Domain (Normalized to 100)", expanded=Tru
     st.write(f"🔗 Market: {norm_market:.1f}")
 
 # ---------------- CHARTS ----------------
-st.subheader("📊 Normalized Domain Contribution – Bar Chart")
+st.subheader("📊 Domain Contributions – Bar Chart")
 
 labels = ["⚕️ Health", "💸 Economic", "📢 Political", "🛒 Trust", "🔗 Market"]
 values = [norm_health, norm_econ, norm_pol, norm_trust, norm_market]
@@ -411,7 +411,7 @@ for i, v in enumerate(values):
 st.pyplot(fig_bar)
 
 # PIE CHART
-st.subheader("🧁 Contextual Risk Breakdown (Excludes Health) – Normalized")
+st.subheader("📊 Contextual Risk Breakdown")
 
 labels_context = ["⚕️ Health", "💸 Economic", "📢 Political", "🛒 Trust", "🔗 Market"]
 values_context = [norm_health, norm_econ, norm_pol, norm_trust, norm_market]
@@ -433,3 +433,141 @@ if filtered_values:
     st.pyplot(fig_pie)
 else:
     st.warning("⚠️ Cannot display pie chart – all contextual contributions are zero or missing.")
+  
+  # ---------------- FEEDBACK + PDF REPORT ----------------
+st.header("📝 User Feedback & PDF Report")
+
+# Feedback Text Area
+user_feedback = st.text_area("💬 Share your suggestions or difficulties using this tool:", height=150)
+
+# Generate PDF Button
+generate_report = st.button("📄 Generate Risk Report (PDF)")
+
+if generate_report:
+    from io import BytesIO
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.utils import ImageReader
+
+    buffer = BytesIO()
+    pie_buffer = BytesIO()
+
+    # Save pie chart to BytesIO
+    if filtered_values:
+        fig_pie.savefig(pie_buffer, format='png', bbox_inches='tight')
+        pie_buffer.seek(0)
+        pie_image = ImageReader(pie_buffer)
+    else:
+        pie_image = None
+
+    c = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+    y = height - 40
+
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(50, y, "📄 OliRisk – Risk Assessment Report")
+    y -= 30
+
+    c.setFont("Helvetica", 11)
+    c.drawString(50, y, f"Selected Scenario: {selected_preset}")
+    y -= 20
+
+    # Step 1 – Microbiological Inputs
+    c.drawString(50, y, "🧮 Microbiological Inputs:")
+    y -= 15
+    c.drawString(70, y, f"Risk Ranger Score: {rr_score}")
+    y -= 15
+    c.drawString(70, y, f"Estimated Illness Base: {base}")
+    y -= 15
+    c.drawString(70, y, f"Exponent: {exponent}")
+    y -= 15
+    c.drawString(70, y, f"Total Population at Risk: {total_population}")
+    y -= 25
+
+    # Step 2 – Contextual Impacts
+    c.drawString(50, y, "🌍 Contextual Impact Selections:")
+    y -= 15
+    c.drawString(70, y, f"Economic Impact: {economic_choice}")
+    y -= 15
+    c.drawString(70, y, f"Political Sensitivity: {political_choice}")
+    y -= 15
+    c.drawString(70, y, f"Consumer Trust Loss: {trust_choice}")
+    y -= 15
+    c.drawString(70, y, f"Market Disruption: {market_choice}")
+    y -= 25
+
+    # Step 3 – Weights
+    c.drawString(50, y, "⚖️ Importance Weights:")
+    y -= 15
+    c.drawString(70, y, f"Health Weight: {health_weight_choice}")
+    y -= 15
+    c.drawString(70, y, f"Economic Weight: {econ_weight_choice}")
+    y -= 15
+    c.drawString(70, y, f"Political Weight: {pol_weight_choice}")
+    y -= 15
+    c.drawString(70, y, f"Trust Weight: {trust_weight_choice}")
+    y -= 15
+    c.drawString(70, y, f"Market Weight: {market_weight_choice}")
+    y -= 25
+
+    # Step 4 – Final Results
+    c.drawString(50, y, "📊 Final Results:")
+    y -= 15
+    c.drawString(70, y, f"Composite Risk Score: {final_score:.2f} / 100 – {risk_level}")
+    y -= 15
+
+    # Normalized Contributions
+    c.drawString(50, y, "🔹 Factors contributions:")
+    y -= 15
+    c.drawString(70, y, f"⚕️ Health: {norm_health:.1f}%")
+    y -= 15
+    c.drawString(70, y, f"💸 Economic: {norm_econ:.1f}%")
+    y -= 15
+    c.drawString(70, y, f"📢 Political: {norm_pol:.1f}%")
+    y -= 15
+    c.drawString(70, y, f"🛒 Trust: {norm_trust:.1f}%")
+    y -= 15
+    c.drawString(70, y, f"🔗 Market: {norm_market:.1f}%")
+    y -= 25
+
+    # Insert Pie Chart if available
+    if pie_image and y > 250:
+        c.drawString(50, y, "🥧 Contextual Risk Pie Chart:")
+        y -= 10
+        c.drawImage(pie_image, 100, y - 180, width=300, height=180)
+        y -= 200
+    elif pie_image:
+        c.showPage()
+        y = height - 40
+        c.drawString(50, y, "🥧 Contextual Risk Pie Chart (continued):")
+        y -= 10
+        c.drawImage(pie_image, 100, y - 180, width=300, height=300)
+        y -= 200
+    else:
+        c.drawString(50, y, "⚠️ No contextual contributions to generate a pie chart.")
+        y -= 30
+
+    # Feedback Section
+    if user_feedback:
+        if y < 100:
+            c.showPage()
+            y = height - 40
+        c.drawString(50, y, "✍️ User Feedback:")
+        y -= 20
+        text = c.beginText(70, y)
+        text.setFont("Helvetica-Oblique", 10)
+        for line in user_feedback.splitlines():
+            text.textLine(line)
+            y -= 14
+        c.drawText(text)
+
+    c.save()
+    buffer.seek(0)
+
+    st.success("✅ PDF report generated successfully!")
+    st.download_button(
+        label="📥 Download Risk Report (PDF)",
+        data=buffer,
+        file_name="OliRisk_Risk_Report.pdf",
+        mime="application/pdf"
+    )
