@@ -5,7 +5,7 @@ import math
 st.set_page_config(page_title="OliRisk", layout="centered")
 
 # ---------------- CONFIG ----------------
-st.title("🧮 OliRisk")
+st.title("🧮 HoliRisk")
 
 # ---------------- PRESETS ----------------
 st.sidebar.header("🎯 Select Preset Scenario")
@@ -192,24 +192,25 @@ st.info("❓ Not sure how to choose the right impact values? Click the tip below
 with st.expander("💡 Tips"):
     st.markdown("""
     **🔸 Economic Impact**  
-    - Use **75–100** if national recalls, legal consequences, or multi-country disruptions occur.  
-    - **50** fits limited regional withdrawals or financial losses.  
-    - **25** is appropriate for batch-level product reprocessing or negligible financial cost.
+    - Use **Limited to Severe** if national recalls, legal consequences, or multi-country disruptions occur.  
+    - **Moderate to Limited** fits limited regional withdrawals or financial losses.  
+    - **Insignificant to Moderate** is appropriate for batch-level product reprocessing or negligible financial cost.
 
     **🔸 Political/Media Sensitivity**  
-    - **75–100** when national or international media is involved, or if public officials respond.  
-    - Use **50** for local coverage or niche media interest.  
-    - **25** for internal issues with no media attention.
+   
+    - Use **Insignificant to Low** for internal issues with no media attention.
+    - **Low to Medium** for local coverage or niche media interest.  
+    - **Medium to High** when national or international media is involved, or if public officials respond.  
 
     **🔸 Consumer Trust Loss**  
-    - **75–100** if consumer backlash, social media storm, or boycotts are likely.  
-    - **50** for reputational concern or increased customer service demand.  
-    - **25** when customers are unlikely to notice or care.
+    - Use **Insignificant to Low** when customers are unlikely to notice or care.   
+    - **Low to Medium** for reputational concern or increased customer service demand.  
+    - **Medium  to High** if consumer backlash, social media storm, or boycotts are likely.
 
     **🔸 Market Disruption**  
-    - Choose **75–100** if large-scale product removal or barriers to trade exist.  
-    - **50** for limited retailer or distributor withdrawal.  
-    - **25** if the product remains widely available.
+    - Use **Insignificant to Low** if the product remains widely available.  
+    - **Low to Medium** for limited retailer or distributor withdrawal.  
+    - **Moderate to Severe** if large-scale product removal or barriers to trade exist.
 
     💬 *Think in terms of visibility and scale: who is affected, how publicly, and how widely?*
     """)
