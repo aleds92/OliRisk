@@ -416,7 +416,7 @@ else:
         labels=filtered_labels,
         values=filtered_values,
         textinfo='label+percent',
-        insidetextorientation='horizontal'
+        insidetextorientation='radial'
     )])
 
     fig.update_traces(hole=0)  # Optional: donut style
@@ -424,7 +424,10 @@ else:
     title_text="📊 Contextual Risk Breakdown",
     width=600,  # larghezza in pixel
     height=600,  # altezza in pixel
-     font=dict(size=16)
+    font=dict(size=16),
+    legend=dict(
+        font=dict(size=18)  # 👈 cambia qui la grandezza
+    )
 )
 
     st.plotly_chart(fig)
