@@ -1,8 +1,8 @@
 import streamlit as st
-import matplotlib.pyplot as plt
 import numpy as np
 import math
 import datetime
+import plotly.graph_objects as go
 
 st.set_page_config(page_title="HoliRisk", layout="centered")
 
@@ -402,28 +402,33 @@ with st.expander("📥 Contribution by Domain", expanded=True):
 # ---------------- CHARTS ----------------
 # PIE CHART
 st.subheader("📊 Contextual Risk Breakdown")
-
+import plotly.graph_objects as go
 labels_context = ["⚕️ Health", "💸 Economic", "📢 Political", "🛒 Trust", "🔗 Market"]
 values_context = [norm_health, norm_econ, norm_pol, norm_trust, norm_market]
 
-filtered_labels = []
-filtered_values = []
-for label, value in zip(labels_context, values_context):
-    if not (value is None or np.isnan(value) or value == 0):
-        filtered_labels.append(label)
-        filtered_values.append(value)
-
-def autopct_no_percent(pct):
-    return f"{pct:.1f}"
-
-if filtered_values:
-    fig_pie, ax_pie = plt.subplots()
-    ax_pie.pie(filtered_values, labels=filtered_labels, autopct=autopct_no_percent, startangle=140)
-    ax_pie.axis("equal")
-    st.pyplot(fig_pie)
-else:
+filtered_data = [(l, v) for l, v in zip(labels_context, values_context) if v and not np.isnan(v)]
+if not filtered_data:
     st.warning("⚠️ Cannot display pie chart – all contextual contributions are zero or missing.")
-  
+else:
+    filtered_labels, filtered_values = zip(*filtered_data)
+
+    fig = go.Figure(data=[go.Pie(
+        labels=filtered_labels,
+        values=filtered_values,
+        textinfo='label+percent',
+        insidetextorientation='horizontal'
+    )])
+
+    fig.update_traces(hole=0)  # Optional: donut style
+    fig.update_layout(
+    title_text="📊 Contextual Risk Breakdown",
+    width=600,  # larghezza in pixel
+    height=600,  # altezza in pixel
+     font=dict(size=16)
+)
+
+    st.plotly_chart(fig)
+
   # ---------------- FEEDBACK + PDF REPORT ----------------
 st.header("📝 Notes & PDF Report")
 

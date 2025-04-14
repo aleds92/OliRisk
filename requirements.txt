@@ -4,4 +4,4 @@ gspread
 oauth2client
 joblib
 scikit-learn
-matplotlib
+plotly
