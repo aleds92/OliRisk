@@ -450,14 +450,27 @@ if generate_report:
 
     buffer = BytesIO()
 
-    # Save Plotly pie chart to PNG if it exists
+    # Inizializza sempre pie_image per evitare NameError
     pie_image = None
+
+    # Forza layout del grafico (Plotly) per la versione da salvare
+    fig.update_layout(
+        paper_bgcolor='white',
+        plot_bgcolor='white',
+        title_text="📊 Contextual Risk Breakdown",
+        width=800,
+        height=800,
+        font=dict(size=18),
+        legend=dict(font=dict(size=16))
+    )
+
+    # Salva il grafico Plotly se ci sono dati
     if filtered_values:
         pie_path = "context_pie.png"
         fig.write_image(pie_path, width=800, height=800)
         pie_image = ImageReader(pie_path)
 
-    # Start PDF generation
+    # Inizio generazione PDF
     c = canvas.Canvas(buffer, pagesize=A4)
     width, height = A4
     y = height - 40
@@ -470,7 +483,7 @@ if generate_report:
     c.drawString(50, y, f"Selected Scenario: {selected_preset}")
     y -= 20
 
-    # Step 1 – Microbiological Inputs
+    # Microbiological Inputs
     c.drawString(50, y, "🧮 Microbiological Inputs:")
     y -= 15
     c.drawString(70, y, f"Risk Ranger Score: {rr_score}")
@@ -482,7 +495,7 @@ if generate_report:
     c.drawString(70, y, f"Total Population at Risk: {total_population}")
     y -= 25
 
-    # Step 2 – Contextual Impacts
+    # Contextual Impacts
     c.drawString(50, y, "🌍 Contextual Impact Selections:")
     y -= 15
     c.drawString(70, y, f"Economic Impact: {economic_choice}")
@@ -494,7 +507,7 @@ if generate_report:
     c.drawString(70, y, f"Market Disruption: {market_choice}")
     y -= 25
 
-    # Step 3 – Weights
+    # Weights
     c.drawString(50, y, "⚖️ Importance Weights:")
     y -= 15
     c.drawString(70, y, f"Health Weight: {health_weight_choice}")
@@ -508,7 +521,7 @@ if generate_report:
     c.drawString(70, y, f"Market Weight: {market_weight_choice}")
     y -= 25
 
-    # Step 4 – Final Results
+    # Final Results
     c.drawString(50, y, "📊 Final Results:")
     y -= 15
     c.drawString(70, y, f"Composite Risk Score: {final_score:.2f} / 100 – {risk_level}")
@@ -528,24 +541,24 @@ if generate_report:
     c.drawString(70, y, f"🔗 Market: {norm_market:.1f}%")
     y -= 25
 
- # Insert Pie Chart if available (centered, square, and color-friendly)
-if pie_image and y > 350:
-    c.drawString(50, y, "🥧 Contextual Risk Pie Chart:")
-    y -= 10
-    c.drawImage(pie_image, x=105, y=y - 300, width=300, height=300)
-    y -= 320
-elif pie_image:
-    c.showPage()
-    y = height - 40
-    c.drawString(50, y, "🥧 Contextual Risk Pie Chart (continued):")
-    y -= 10
-    c.drawImage(pie_image, x=105, y=y - 300, width=300, height=300)
-    y -= 320
-else:
-    c.drawString(50, y, "⚠️ No contextual contributions to generate a pie chart.")
-    y -= 30
+    # Inserisci grafico Plotly se disponibile
+    if pie_image and y > 350:
+        c.drawString(50, y, "🥧 Contextual Risk Pie Chart:")
+        y -= 10
+        c.drawImage(pie_image, x=105, y=y - 300, width=300, height=300)
+        y -= 320
+    elif pie_image:
+        c.showPage()
+        y = height - 40
+        c.drawString(50, y, "🥧 Contextual Risk Pie Chart (continued):")
+        y -= 10
+        c.drawImage(pie_image, x=105, y=y - 300, width=300, height=300)
+        y -= 320
+    else:
+        c.drawString(50, y, "⚠️ No contextual contributions to generate a pie chart.")
+        y -= 30
 
-    # Feedback Section
+    # Feedback
     if user_feedback:
         if y < 100:
             c.showPage()
@@ -573,6 +586,7 @@ else:
         file_name="HoliRisk_Risk_Report.pdf",
         mime="application/pdf"
     )
+
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import traceback
