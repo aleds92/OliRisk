@@ -528,22 +528,22 @@ if generate_report:
     c.drawString(70, y, f"🔗 Market: {norm_market:.1f}%")
     y -= 25
 
-    # Insert Pie Chart if available
-    if pie_image and y > 250:
-        c.drawString(50, y, "🥧 Contextual Risk Pie Chart:")
-        y -= 10
-        c.drawImage(pie_image, 100, y - 180, width=300, height=180)
-        y -= 200
-    elif pie_image:
-        c.showPage()
-        y = height - 40
-        c.drawString(50, y, "🥧 Contextual Risk Pie Chart (continued):")
-        y -= 10
-        c.drawImage(pie_image, 100, y - 180, width=300, height=300)
-        y -= 200
-    else:
-        c.drawString(50, y, "⚠️ No contextual contributions to generate a pie chart.")
-        y -= 30
+ # Insert Pie Chart if available (centered, square, and color-friendly)
+if pie_image and y > 350:
+    c.drawString(50, y, "🥧 Contextual Risk Pie Chart:")
+    y -= 10
+    c.drawImage(pie_image, x=105, y=y - 300, width=300, height=300)
+    y -= 320
+elif pie_image:
+    c.showPage()
+    y = height - 40
+    c.drawString(50, y, "🥧 Contextual Risk Pie Chart (continued):")
+    y -= 10
+    c.drawImage(pie_image, x=105, y=y - 300, width=300, height=300)
+    y -= 320
+else:
+    c.drawString(50, y, "⚠️ No contextual contributions to generate a pie chart.")
+    y -= 30
 
     # Feedback Section
     if user_feedback:
@@ -573,7 +573,6 @@ if generate_report:
         file_name="HoliRisk_Risk_Report.pdf",
         mime="application/pdf"
     )
-
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import traceback
