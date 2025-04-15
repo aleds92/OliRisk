@@ -485,7 +485,11 @@ if filtered_values:
 
 
     # Inizio generazione PDF
+try:
     c = canvas.Canvas(buffer, pagesize=A4)
+except Exception as e:
+    st.error(f"❌ Failed to initialize PDF canvas: {e}")
+    st.stop()
     width, height = A4
     y = height - 40
 
