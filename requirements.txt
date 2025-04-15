@@ -5,3 +5,4 @@ oauth2client
 joblib
 scikit-learn
 plotly
+reportlab
