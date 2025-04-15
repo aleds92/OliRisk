@@ -453,24 +453,34 @@ if generate_report:
 # Inizializza sempre pie_image per evitare NameError
 pie_image = None
 
-# Forza il tema chiaro globale di Plotly
+# Ricrea il grafico con template chiaro
 import plotly.io as pio
 pio.templates.default = "plotly_white"
 
-# Configura layout grafico
-fig.update_layout(
-    title_text="📊 Contextual Risk Breakdown",
-    width=800,
-    height=800,
-    font=dict(size=18),
-    legend=dict(font=dict(size=16))
-)
-
-# Salva il grafico Plotly se ci sono dati
 if filtered_values:
+    filtered_labels, filtered_values_plot = zip(*filtered_data)
+
+    fig_export = go.Figure(data=[go.Pie(
+        labels=filtered_labels,
+        values=filtered_values_plot,
+        textinfo='label+percent',
+        insidetextorientation='radial'
+    )])
+
+    fig_export.update_layout(
+        title_text="📊 Contextual Risk Breakdown",
+        width=800,
+        height=800,
+        font=dict(size=18),
+        legend=dict(font=dict(size=16)),
+        paper_bgcolor='white',
+        plot_bgcolor='white'
+    )
+
     pie_path = "context_pie.png"
-    fig.write_image(pie_path, width=800, height=800, engine="kaleido")
+    fig_export.write_image(pie_path, width=800, height=800, engine="kaleido")
     pie_image = ImageReader(pie_path)
+
 
 
 
