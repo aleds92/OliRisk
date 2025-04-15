@@ -455,7 +455,6 @@ if generate_report:
     from io import BytesIO
     from reportlab.lib.pagesizes import A4
     from reportlab.pdfgen import canvas
-import plotly.io as pio
 pio.templates.default = "plotly_white"
 pie_image = None
 if filtered_values:
