@@ -411,7 +411,6 @@ if not filtered_data:
     st.warning("⚠️ Cannot display pie chart – all contextual contributions are zero or missing.")
 else:
     filtered_labels, filtered_values = zip(*filtered_data)
-
     fig = go.Figure(data=[go.Pie(
         labels=filtered_labels,
         values=filtered_values,
@@ -432,7 +431,7 @@ else:
 
     st.plotly_chart(fig)
 
-  # ---------------- FEEDBACK + PDF REPORT ----------------
+# ---------------- FEEDBACK + PDF REPORT ----------------
 st.header("📝 Notes & PDF Report")
 
 # Feedback Text Area
@@ -446,18 +445,19 @@ if generate_report:
     from reportlab.lib.pagesizes import A4
     from reportlab.pdfgen import canvas
     from reportlab.lib.utils import ImageReader
+    import plotly.io as pio
+    import os
 
     buffer = BytesIO()
-    pie_buffer = BytesIO()
 
-    # Save pie chart to BytesIO
+    # Save Plotly pie chart to PNG if it exists
+    pie_image = None
     if filtered_values:
-        fig_pie.savefig(pie_buffer, format='png', bbox_inches='tight')
-        pie_buffer.seek(0)
-        pie_image = ImageReader(pie_buffer)
-    else:
-        pie_image = None
+        pie_path = "context_pie.png"
+        fig.write_image(pie_path, width=800, height=800)
+        pie_image = ImageReader(pie_path)
 
+    # Start PDF generation
     c = canvas.Canvas(buffer, pagesize=A4)
     width, height = A4
     y = height - 40
@@ -562,13 +562,18 @@ if generate_report:
     c.save()
     buffer.seek(0)
 
+    # Cleanup image file
+    if filtered_values and os.path.exists(pie_path):
+        os.remove(pie_path)
+
     st.success("✅ PDF report generated successfully!")
     st.download_button(
         label="📥 Download Risk Report (PDF)",
         data=buffer,
-        file_name="OliRisk_Risk_Report.pdf",
+        file_name="HoliRisk_Risk_Report.pdf",
         mime="application/pdf"
     )
+
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import traceback
