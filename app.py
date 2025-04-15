@@ -619,11 +619,11 @@ if generate_report:
                 mime="application/pdf"
             )
 
-    import gspread
-    from oauth2client.service_account import ServiceAccountCredentials
-    import traceback
-    import uuid
-    import datetime
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+import traceback
+import uuid
+import datetime
 
 st.header("☁️ Anonymized Data Submission")
 
@@ -665,19 +665,19 @@ if "data_sent" not in st.session_state:
         st.session_state["data_sent"] = False
 
 if st.button("📤 Save Anonymized Data to Google Sheets"):
-        try:
+    try:
                 # 🔒 Allow only CUSTOM scenarios
-            if selected_preset != "Custom":
+        if selected_preset != "Custom":
                 st.warning("⚠️ Only custom scenarios can be submitted. Please select 'Custom' to proceed.")
                 st.stop()
 
                 # Prevent duplicate sends
-            if st.session_state["data_sent"]:
+        if st.session_state["data_sent"]:
                 st.warning("⚠️ Data has already been submitted in this session.")
                 st.stop()
 
                 # Default values for Custom
-            default_values = {
+        default_values = {
                     'rr_score': 50,
                     'base': 1.0,
                     'exponent': 5,
@@ -693,7 +693,7 @@ if st.button("📤 Save Anonymized Data to Google Sheets"):
                     'market_weight_choice': list(market_weight_levels.keys())[0],
                 }
 
-            user_values = {
+        user_values = {
                     'rr_score': rr_score,
                     'base': base,
                     'exponent': exponent,
@@ -709,25 +709,25 @@ if st.button("📤 Save Anonymized Data to Google Sheets"):
                     'market_weight_choice': market_weight_choice,
                 }
 
-            if all(user_values[k] == default_values[k] for k in default_values) and not user_feedback.strip():
+        if all(user_values[k] == default_values[k] for k in default_values) and not user_feedback.strip():
                 st.warning("⚠️ Data not saved: no values were changed and no feedback was provided.")
                 st.stop()
 
                 # ⏳ Show spinner while saving
-            with st.spinner("⏳ Saving your data... Please do not close the page."):
+        with st.spinner("⏳ Saving your data... Please do not close the page."):
                     # Google Sheets connection
-                scope = [
+            scope = [
                         "https://spreadsheets.google.com/feeds",
                         "https://www.googleapis.com/auth/spreadsheets",
                         "https://www.googleapis.com/auth/drive"
                     ]
-                creds = ServiceAccountCredentials.from_json_keyfile_dict(st.secrets["google_service_account"], scope)
-                client = gspread.authorize(creds)
-                sheet = client.open("HoliRisk Data Logger").sheet1
+            creds = ServiceAccountCredentials.from_json_keyfile_dict(st.secrets["google_service_account"], scope)
+            client = gspread.authorize(creds)
+            sheet = client.open("HoliRisk Data Logger").sheet1
 
                     # Create row
-                session_id = str(uuid.uuid4())
-                row = [
+            session_id = str(uuid.uuid4())
+            row = [
                         datetime.datetime.now().isoformat(),
                         session_id,
                         selected_preset,
@@ -754,13 +754,13 @@ if st.button("📤 Save Anonymized Data to Google Sheets"):
                     ]
 
                     # Save to Google Sheets
-                sheet.append_row(row, value_input_option="USER_ENTERED")
-                st.session_state["data_sent"] = True
-                st.success("✅ Your custom scenario has been saved successfully. Thank you for your contribution!")
+            sheet.append_row(row, value_input_option="USER_ENTERED")
+            st.session_state["data_sent"] = True
+            st.success("✅ Your custom scenario has been saved successfully. Thank you for your contribution!")
 
-        except Exception as e:
-            st.error("❌ An error occurred while saving the data.")
-            st.code(traceback.format_exc())
+    except Exception as e:
+        st.error("❌ An error occurred while saving the data.")
+        st.code(traceback.format_exc())
 
 
     # Inizializza sempre pie_image per evitare NameError
