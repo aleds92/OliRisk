@@ -214,6 +214,21 @@ with col3:
 
 total_population = st.number_input("Total Population at Risk", min_value=1, value=preset["population"] if preset else 60000000)
 
+# 💊 Hospitalization factor choice
+hospitalization_options = {
+    "None or Minimal hospitalization, 1-5% of hospitalized cases ": 1.0,
+    "Moderate hospitalization, 5-20% of hospitalized cases": 1.25,
+    "Severe hospitalization, 20 to 40% of hospitalized cases": 1.5,
+    "Critical public health emergency, >40% of hospitalized cases": 2.0
+}
+hospitalization_choice = st.selectbox(
+    "🏥 Estimated Impact on National Sanitary System",
+    options=list(hospitalization_options.keys()),
+    index=0,
+    help="What is the number of hospitalized cases if the target pathogen infects humans? The right choice can be obtained on the zoonoses report published by EFSA."
+)
+hospitalization_factor = hospitalization_options[hospitalization_choice]
+
 # ---------------- STEP 2 ----------------
 st.header("Step 2: Contextual Impact")
 st.info("❓ Not sure how to choose the right impact values? Click the tip below for guidance.")
@@ -399,6 +414,7 @@ if total_contrib > 0:
 
 
 final_score = min(total_contrib, 100)
+final_score *= hospitalization_factor
 
 if final_score < 40:
     risk_level = "🟢 Low Societal Risk"
@@ -410,12 +426,6 @@ elif final_score > 70:
 st.subheader("📊 Final Score")
 st.metric(label="Composite Risk Score", value=f"{final_score:.2f} / 100", delta=risk_level)
 
-st.markdown(f"""
-    **Illness Factor:** `{illness_factor:.6f}%`  
-    **Category:** {category}  
-    **Illness Multiplier:** `{multiplier:.3f}`  
-    **RR Scaled:** `{rr_scaled:.2f}`
-    """)
 
 with st.expander("📥 Contribution by Domain", expanded=True):
         st.write(f"⚕️ Health: {norm_health:.1f}")
