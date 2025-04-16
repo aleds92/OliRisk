@@ -416,11 +416,13 @@ if total_contrib > 0:
 final_score = min(total_contrib, 100)
 final_score *= hospitalization_factor
 
-if final_score < 40:
+if final_score < 25:
     risk_level = "🟢 Low Societal Risk"
-elif final_score < 70:
+elif final_score < 50:
     risk_level = "🟡 Moderate Societal Risk"
-elif final_score > 70:
+elif final_score < 75:
+    risk_level = "🟠 Significant Societal Risk"
+elif final_score < 75:
     risk_level = "🔴 High Societal Risk"
 
 st.subheader("📊 Final Score")
