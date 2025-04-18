@@ -422,7 +422,7 @@ elif final_score < 50:
     risk_level = "🟡 Moderate Societal Risk"
 elif final_score < 75:
     risk_level = "🟠 Significant Societal Risk"
-elif final_score < 75:
+elif final_score > 75:
     risk_level = "🔴 High Societal Risk"
 
 st.subheader("📊 Final Score")
