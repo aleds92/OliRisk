@@ -200,7 +200,24 @@ selected_preset = st.sidebar.selectbox("Choose scenario", list(presets.keys()))
 preset = presets[selected_preset]
 
 # ---------------- STEP 1 ----------------
+
 st.header("Step 1: Microbiological Inputs")
+
+with st.expander("📘 Guidance: How to obtain Risk Ranger values"):
+    st.markdown("""
+    The parameters required in this section—namely the **Risk Ranger Score**, **Estimated Illness Base**, and **Exponent**—should be derived using the official *Risk Ranger* tool, available via the European Food Safety Portal.
+
+    🔗 [Access the Risk Ranger Tool](https://foodsafetyportal.eu/riskranger/rr_riskranger.html)
+
+    #### Instructions:
+    1. Navigate to the Risk Ranger tool and complete the questionnaire based on your scenario.
+    2. Record the resulting *Risk Ranking Score* and the estimated number of illness cases.
+    3. Input the *Risk Ranger Score* using the slider provided above.
+    4. Express the illness estimate in scientific notation (Base × 10^Exponent) and enter the corresponding values into the respective input fields.
+
+    🧠 *These inputs are essential for estimating the proportion of the population potentially affected by the identified food safety risk.*
+    """)
+
 
 rr_score = st.slider("Risk Ranger Score (0–100)", 0, 100, value=preset["rr_score"] if preset else 50)
 
